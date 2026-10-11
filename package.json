@@ -1,0 +1,57 @@
+{
+  "name": "netease-enterprise-mail-mcp",
+  "version": "1.2.0",
+  "description": "Unofficial NetEase Enterprise Mail MCP server with read-only-by-default IMAP search, message reading and local attachment downloads.",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "netease-enterprise-mail-mcp": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "node --import ./test/network-guard.mjs test/test-dispatch.mjs",
+    "test:offline": "node test/test-offline.mjs",
+    "check:known-issues": "node test/check-known-issues.mjs",
+    "test:regression": "node --import ./test/network-guard.mjs test/test-release-blockers.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "netease",
+    "enterprise-email",
+    "imap",
+    "nodejs"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "files": [
+    "index.js",
+    "README.md",
+    "DEPLOYMENT.md",
+    "LICENSE",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "THIRD_PARTY_NOTICES.md",
+    ".env.example",
+    "install.sh",
+    "test/"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "dotenv": "^17.4.2",
+    "imap": "^0.8.17",
+    "mailparser": "^3.9.8",
+    "nodemailer": "^8.0.7",
+    "poplib": "^0.1.7"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/nodemailer": "^8.0.0"
+  },
+  "overrides": {
+    "minimist": "^1.2.8"
+  }
+}
