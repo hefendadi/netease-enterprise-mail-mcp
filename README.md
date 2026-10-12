@@ -1,6 +1,47 @@
 # NetEase Enterprise Mail MCP
 
-[中文](#中文说明) · [English](#english)
+**让 AI Agent 连接你的网易企业邮箱**
+
+Connect NetEase Enterprise Mail to AI agents
+
+通过本地 MCP，让 WorkBuddy 及其他支持本地 stdio MCP 的客户端按需检索网易企业邮箱邮件标题、读取正文和下载附件。
+
+A local MCP server for WorkBuddy and other clients supporting local stdio MCP, with NetEase Enterprise Mail subject search, message reading and attachment downloads on request.
+
+**[中文 Quick Start](QUICKSTART.md#中文快速开始) · [English Quick Start](QUICKSTART.md#english-quick-start)**
+
+V1.2.0 · Node.js ≥20.19.0 · [MIT](LICENSE) · 默认只读 / Read-only by default
+
+| 核心功能 / Core feature | 能做什么 / What it does |
+| --- | --- |
+| 邮件标题检索 / Subject search | 按标题关键词、发件人、日期和文件夹检索。 Filter by subject keyword, sender, date and folder. |
+| 正文读取 / Message reading | 按需读取指定邮件的纯文本正文和附件清单。 Read a selected message's plain-text body and attachment list. |
+| 附件下载 / Attachment downloads | 按编号将单个附件保存到服务所在机器。 Save one numbered attachment on the server's machine. |
+
+本项目非网易官方。邮箱操作默认只读，附件下载仍会写入本地文件；安全保存要求可信 POSIX 文件系统，Windows 等不能提供所需安全检查的环境会拒绝附件保存。
+
+Unofficial and not affiliated with NetEase. Mailbox access is read-only by default; downloads write local files and require trusted POSIX filesystem checks. Windows and other environments lacking those checks reject attachment saves.
+
+## 快速使用 / Get started
+
+获取客户端授权码并开启 IMAP → 下载项目、安装依赖 → 亲自填写本地 `.env` → 复制 Agent 注册 Prompt → 自行测试连接与标题检索。
+
+Enable IMAP and obtain a client code → download and install → fill in local `.env` yourself → copy the agent registration prompt → explicitly test the connection and subject search.
+
+- [中文注册 Prompt](QUICKSTART.md#中文-agent-注册-prompt) · [English registration prompt](QUICKSTART.md#english-agent-registration-prompt)：Agent 能否自动注册取决于本地权限及客户端能力。 Automatic registration depends on local permissions and client capabilities.
+- 安装命令、凭据填写和手动备用方案见上方 Quick Start；不要将授权码发到聊天中。 Use the Quick Start above for installation, local credential entry and manual fallback; never provide the code in chat.
+
+## 使用示例 / Example requests
+
+以下为虚构演示，需要已完成配置；后两步使用实际检索返回的邮件。 These fictional examples assume setup is complete; the last two requests refer to an actual search result.
+
+1. “帮我查找最近 7 天标题包含『项目更新』的邮件。” / “Find emails from the last 7 days with 'project update' in the subject.”
+2. “读取刚才找到的邮件正文。” / “Read the body of the email we just found.”
+3. “下载这封邮件的第一个附件。” / “Download the first attachment from this email.”
+
+搜索仅匹配标题，不提供正文或附件全文搜索；默认不发送邮件。 Search matches subjects, not full message or attachment contents; sending is disabled by default.
+
+[中文技术说明](#中文说明) · [English technical notes](#english) · [安全 / Security](SECURITY.md) · [部署 / Deployment](DEPLOYMENT.md)
 
 ## 中文说明
 
@@ -8,7 +49,11 @@
 
 V1.2.0 提供默认只读的邮件访问，适用于 WorkBuddy 及其他支持本地 stdio MCP 的客户端。不保证兼容所有网易邮箱服务配置；其他邮箱提供商的配置沿用上游，不代表本项目已验证其兼容性。
 
-> **首次使用？从 [Quick Start 快速开始](QUICKSTART.md#中文快速开始) 入门。** 获取授权码、安装依赖、亲自填写 `.env`，然后复制中文 Prompt，让有本地操作权限的 Agent 帮你注册 MCP。提供 macOS、Linux 和 Windows 步骤。
+### 安装
+
+需要 **Node.js ≥20.19.0** 和 npm。20.19.0 是当前锁定依赖的最低 Node 版本要求。下载、安装、授权码说明及本地凭据填写见 [Quick Start](QUICKSTART.md#中文快速开始)。其中所有账号、凭据、UID 和本机路径示例均为虚构占位符。
+
+macOS/Linux 的 `bash install.sh` 只检查运行环境、安装锁定依赖、在不存在时创建 `.env` 模板，不填写真实凭据，不自动注册客户端，不连接邮箱。Windows PowerShell 的等价安装步骤见 Quick Start。
 
 ### 功能和工具
 
@@ -25,12 +70,6 @@ V1.2.0 提供默认只读的邮件访问，适用于 WorkBuddy 及其他支持�
 默认不公布、且调用时拦截 `send_email`、`setup_email_account`、`configure_email_server`。已有开关 `ENABLE_WRITE_TOOLS=true` 会启用这三个工具。保持默认只读时不要启用它；本项目不是永久禁写的沙箱。
 
 邮件读取以只读方式打开 IMAP 文件夹，不主动修改已读标记。附件下载会写入本地文件，邮件正文和元数据也会交给 MCP 客户端及其模型；请按客户端的数据处理规则授权。
-
-### 安装
-
-需要 **Node.js ≥20.19.0** 和 npm。20.19.0 是当前锁定依赖的最低 Node 版本要求。下载、安装、授权码说明及本地凭据填写见 [Quick Start](QUICKSTART.md#中文快速开始)。其中所有账号、凭据、UID 和本机路径示例均为虚构占位符。
-
-macOS/Linux 的 `bash install.sh` 只检查运行环境、安装锁定依赖、在不存在时创建 `.env` 模板，不填写真实凭据，不自动注册客户端，不连接邮箱。Windows PowerShell 的等价安装步骤见 Quick Start。
 
 ### MCP 客户端配置
 
