@@ -8,6 +8,8 @@
 
 V1.2.0 提供默认只读的邮件访问，适用于 WorkBuddy 及其他支持本地 stdio MCP 的客户端。不保证兼容所有网易邮箱服务配置；其他邮箱提供商的配置沿用上游，不代表本项目已验证其兼容性。
 
+> **首次使用？从 [Quick Start 快速开始](QUICKSTART.md#中文快速开始) 入门。** 获取授权码、安装依赖、亲自填写 `.env`，然后复制中文 Prompt，让有本地操作权限的 Agent 帮你注册 MCP。提供 macOS、Linux 和 Windows 步骤。
+
 ### 功能和工具
 
 | 默认可用工具 | 实际能力 |
@@ -26,23 +28,13 @@ V1.2.0 提供默认只读的邮件访问，适用于 WorkBuddy 及其他支持�
 
 ### 安装
 
-需要 **Node.js ≥20.19.0** 和 npm。20.19.0 是当前锁定依赖的最低 Node 版本要求。
+需要 **Node.js ≥20.19.0** 和 npm。20.19.0 是当前锁定依赖的最低 Node 版本要求。下载、安装、授权码说明及本地凭据填写见 [Quick Start](QUICKSTART.md#中文快速开始)。其中所有账号、凭据、UID 和本机路径示例均为虚构占位符。
 
-取得项目源码后进入项目目录：
-
-```bash
-npm ci
-cp .env.example .env
-chmod 600 .env
-```
-
-编辑 `.env`，填写自己的邮箱和客户端授权码。示例中的 `reader@example.com` 和密码占位符均为虚构配置，不能用于登录。IMAP 服务开通及授权方式以你所在企业的管理员说明为准，后台入口和认证策略可能不同。
-
-也可在 macOS/Linux 使用 `bash install.sh`。脚本只检查运行环境、安装锁定依赖、在不存在时创建 `.env` 模板，不填写真实凭据，不自动注册客户端，不连接邮箱。
+macOS/Linux 的 `bash install.sh` 只检查运行环境、安装锁定依赖、在不存在时创建 `.env` 模板，不填写真实凭据，不自动注册客户端，不连接邮箱。Windows PowerShell 的等价安装步骤见 Quick Start。
 
 ### MCP 客户端配置
 
-在 WorkBuddy 的自定义 MCP 配置入口，或其他客户端的 MCP Server 配置中，添加类似以下条目。客户端入口、配置文件位置及是否需要重启，以客户端自身说明为准。
+推荐复制 [中文 Agent 注册 Prompt](QUICKSTART.md#中文-agent-注册-prompt)，由 Agent 检查实际客户端、路径、权限和配置格式。手动配置时，在支持本地 stdio 的客户端中添加类似以下条目；入口、配置文件位置及是否需要重启，以客户端自身说明为准。
 
 ```json
 {
@@ -60,7 +52,7 @@ chmod 600 .env
 
 将两个路径替换为本机的绝对路径。Windows 可使用 `C:/path/to/node.exe` 和 `C:/path/to/netease-enterprise-mail-mcp/index.js`。
 
-服务明确读取 **index.js 同目录的 `.env`**，与客户端启动工作目录无关。进程环境变量优先于 `.env`，因此客户端若存在旧账号配置，应先核对它。也可不创建 `.env`，直接在客户端的 `env` 中设置 `EMAIL_USER`、`EMAIL_PASSWORD` 和 `EMAIL_TYPE`；该方式可能在客户端配置文件中明文保存凭据。
+服务明确读取 **index.js 同目录的 `.env`**，与客户端启动工作目录无关。进程环境变量优先于 `.env`，因此客户端若存在旧账号配置，应由用户自行核对。代码也接受客户端 `env` 中的凭据，这可能在客户端配置文件中明文保存凭据；Quick Start 使用本地 `.env`，注册 Prompt 不读取或复制凭据到客户端配置。
 
 不要把账号或授权码写进源码、示例或提交记录。配置和客户端日志可能包含邮箱信息，分享前需自行脱敏。
 
@@ -130,25 +122,25 @@ npm run test:regression
 
 `npm test` 是现有 MCP 分发测试，用 stub 隔离邮箱，只验证路由及部分返回值与只读拦截。`test:offline` 补充所有工具的分发、默认/启用写工具列表、启动和 stdio 握手检查，使用虚构配置并阻断网络。`test:regression` 使用临时私有目录、虚构 MIME 和针对性的 IMAP 事件 stub，覆盖附件排他写入/失败清理，以及搜索异常/超时状态；同名并发场景使用独立子进程。旧 Mock IMAP 测试未包含在本导出中；夹具文件本身不是测试覆盖。以上通过不代表真实 IMAP、搜索完整性、MIME 或附件全流程已通过自动化测试。本轮不复测真实邮箱。
 
+### 上游来源与许可证
+
+基于 [TimeCyber/email-mcp](https://github.com/TimeCyber/email-mcp)，采用 [MIT 许可证](LICENSE)，保留上游版权。第三方版权及许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)；部署、安全及版本记录见 [DEPLOYMENT.md](DEPLOYMENT.md)、[SECURITY.md](SECURITY.md) 和 [CHANGELOG.md](CHANGELOG.md)。目前未指定维护者身份或漏洞响应 SLA。
+
 ## English
 
 An **unofficial** NetEase Enterprise Mail MCP server derived from [TimeCyber/email-mcp](https://github.com/TimeCyber/email-mcp), licensed under MIT. It is not affiliated with NetEase and does not guarantee compatibility with every NetEase mail service configuration.
 
 V1.2.0 supports IMAP subject search, plain-text message reading, numbered attachment metadata and local attachment downloads. WorkBuddy and other clients supporting local stdio MCP can use it. Provider presets inherited from upstream are not a compatibility certification. Search does not match message bodies, attachment names or attachment contents.
 
+> **New here? Open the [English Quick Start](QUICKSTART.md#english-quick-start).** Get an authorization code, install dependencies, fill in your local `.env` yourself, then copy the English prompt for an agent with local access to register the MCP server. Includes macOS, Linux and Windows instructions.
+
 ### Setup
 
-Install Node.js **20.19.0 or later** and npm, then run in the source directory:
+Requires Node.js **20.19.0 or later** and npm. Follow the [English Quick Start](QUICKSTART.md#english-quick-start) for downloads, platform-specific commands, IMAP permissions and local credential entry. All example accounts, credentials, UIDs and local paths are fictional placeholders. The macOS/Linux installer installs locked dependencies and creates a missing template; it does not register a client or contact a mailbox. Equivalent PowerShell steps are provided for Windows.
 
-```bash
-npm ci
-cp .env.example .env
-chmod 600 .env
-```
+Use the [English agent registration prompt](QUICKSTART.md#english-agent-registration-prompt), or its manual stdio configuration example. The server loads `.env` beside `index.js`; existing process environment variables take precedence. Client configuration can also supply credentials, but may store them in plaintext. The Quick Start prompt does not read or copy credentials into client settings. Never put credentials in source, examples or commits; redact account details from configuration and logs before sharing.
 
-Replace the fictional account and password with your own credentials. Confirm IMAP access and authentication requirements with your administrator. The optional macOS/Linux `bash install.sh` installs dependencies and creates a missing configuration template; it does not register a client or contact a mailbox.
-
-Use the MCP JSON example above with absolute paths to Node and `index.js`. Set `EMAIL_TYPE=netease-enterprise`. The server loads `.env` beside `index.js`; existing process environment variables take precedence. Client configuration can also supply credentials, but may store them in plaintext.
+Detailed environment variables and tool schemas are in the tables above; the English Quick Start provides independent setup and verification prompts.
 
 ### Behavior and limits
 
@@ -161,4 +153,6 @@ Use the MCP JSON example above with absolute paths to Node and `index.js`. Set `
 
 `npm test` runs the existing stub-based dispatch checks; `npm run test:offline` checks additional dispatch and stdio startup behavior without network access. `npm run test:regression` verifies the two repaired blockers using isolated files, concurrent child processes and targeted event stubs. Passing these tests does not establish real-server IMAP/MIME compatibility or complete mail end-to-end correctness. Excluded legacy Mock tests are not counted as passed.
 
-See [DEPLOYMENT.md](DEPLOYMENT.md), [SECURITY.md](SECURITY.md), [CHANGELOG.md](CHANGELOG.md) and [third-party notices](THIRD_PARTY_NOTICES.md). The upstream copyright remains in [LICENSE](LICENSE); no maintainer identity or vulnerability response SLA is asserted.
+### Upstream and license
+
+Derived from [TimeCyber/email-mcp](https://github.com/TimeCyber/email-mcp). See [DEPLOYMENT.md](DEPLOYMENT.md), [SECURITY.md](SECURITY.md), [CHANGELOG.md](CHANGELOG.md) and [third-party notices](THIRD_PARTY_NOTICES.md). The upstream copyright remains in the [MIT license](LICENSE); no maintainer identity or vulnerability response SLA is asserted.
